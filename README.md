@@ -66,3 +66,6 @@ const config = sumconfig('foo', opts)
   doesn't support user-scoped configs without some work, and doesn't support
   .mjs modules.
 - [rc](https://github.com/dominictarr/rc#readme): very widely used, does configuration merging.  Only supports .ini and JSON files.  Tightly coupled with [minimist](https://github.com/substack/minimist) for arg parsing.
+
+[![Tests](https://github.com/hildjj/sumconfig/actions/workflows/node.js.yml/badge.svg)](https://github.com/hildjj/sumconfig/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/gh/hildjj/sumconfig/branch/main/graph/badge.svg?token=1LDKOFF2R6)](https://codecov.io/gh/hildjj/sumconfig)
