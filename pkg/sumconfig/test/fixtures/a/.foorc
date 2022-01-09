@@ -1,0 +1,7 @@
+{
+  "boolean": true,
+  "base": {
+    "foo": 1,
+  },
+  array: 16
+}

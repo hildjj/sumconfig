@@ -1,0 +1,38 @@
+{
+  "name": "sumconfig-monorepo",
+  "version": "0.0.0",
+  "description": "Monorepo for sumconfig projects",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hildjj/sumconfig.git"
+  },
+  "homepage": "https://github.com/hildjj/sumconfig",
+  "scripts": {
+    "test": "ava",
+    "coverage": "c8 ava",
+    "lint": "eslint . --ext js,cjs,mjs",
+    "clean": "rimraf coverage node_modules pkg/*/node_modules pkg/*/coverage"
+  },
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "workspaces": [
+    "./pkg/*"
+  ],
+  "dependencies": {
+    "ava": "^4.0.1",
+    "c8": "^7.11.0"
+  },
+  "devDependencies": {
+    "@cto.af/eslint-config": "^0.0.12",
+    "eslint": "^8.6.0",
+    "eslint-plugin-ava": "^13.2.0",
+    "eslint-plugin-jsdoc": "^37.5.2",
+    "eslint-plugin-node": "^11.1.0",
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14.0"
+  }
+}
