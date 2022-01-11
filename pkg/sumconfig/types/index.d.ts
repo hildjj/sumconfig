@@ -25,8 +25,11 @@
  *   Directories closer to the current directory take precedence.
  * @property {string[]} [fileNames] What file names to check.  If not
  *   specified, will use a list based on the appName.
- * @property {boolean} [ignoreGit] Don't stop when we get to the top of a
- *   git repo.
+ * @property {boolean} [ignoreGit] Don't stop when we get to the top of a git
+ *   repo.
+ * @property {import('./combiners').Combiner} [combine] Specify how to
+ *   combine any two values. Defaults to the opinionated combiner in
+ *   combiners.js.
  */
 /**
  * Build a list of file names to check in each candidate directory for this app.
@@ -44,18 +47,6 @@ export function fileNames(appName: string): string[];
  * @returns {Promise<string[]>} The directories.
  */
 export function allDirs(appName: string, opts: Options): Promise<string[]>;
-/**
- * Combine the contents of different config options together in an opinionated
- * fashion.
- *
- * @private
- * @param {any} a The pre-existing value.  Might be undefined.
- * @param {any} b The new value.
- * @returns {any} A careful combination of a and b.
- * @throws {TypeError} Unknown JS type.  Should be impossible until new
- *   JS types get added again.
- */
-export function combine(a: any, b: any): any;
 /**
  * Gather configurations together from all of the places we can find.
  *
@@ -116,8 +107,14 @@ export type Options = {
      */
     fileNames?: string[];
     /**
-     * Don't stop when we get to the top of a
-     * git repo.
+     * Don't stop when we get to the top of a git
+     * repo.
      */
     ignoreGit?: boolean;
+    /**
+     * Specify how to
+     * combine any two values. Defaults to the opinionated combiner in
+     * combiners.js.
+     */
+    combine?: import('./combiners').Combiner;
 };

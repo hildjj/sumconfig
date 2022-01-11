@@ -2,6 +2,7 @@ import * as fs from 'fs/promises'
 import * as os from 'os'
 import * as path from 'path'
 import * as util from 'util'
+import Combiners from './combiners.js'
 import envPaths from 'env-paths'
 import parseJson from 'parse-json'
 import yaml from 'yaml'
@@ -34,8 +35,11 @@ import yaml from 'yaml'
  *   Directories closer to the current directory take precedence.
  * @property {string[]} [fileNames] What file names to check.  If not
  *   specified, will use a list based on the appName.
- * @property {boolean} [ignoreGit] Don't stop when we get to the top of a
- *   git repo.
+ * @property {boolean} [ignoreGit] Don't stop when we get to the top of a git
+ *   repo.
+ * @property {import('./combiners').Combiner} [combine] Specify how to
+ *   combine any two values. Defaults to the opinionated combiner in
+ *   combiners.js.
  */
 
 /**
@@ -273,61 +277,6 @@ export async function allDirs(appName, opts) {
 }
 
 /**
- * Combine the contents of different config options together in an opinionated
- * fashion.
- *
- * @private
- * @param {any} a The pre-existing value.  Might be undefined.
- * @param {any} b The new value.
- * @returns {any} A careful combination of a and b.
- * @throws {TypeError} Unknown JS type.  Should be impossible until new
- *   JS types get added again.
- */
-export function combine(a, b) {
-  const tb = typeof b
-
-  if (a == null) {
-    return (tb === 'function') ? b() : b
-  }
-
-  switch (tb) {
-    case 'bigint':
-    case 'boolean':
-    case 'number':
-    case 'string':
-    case 'symbol':
-    case 'undefined':
-      return b
-    case 'function':
-      return combine(a, b())
-    case 'object':
-      if (!b) {
-        // Null overwrites.  Is that correct?
-        return b
-      }
-      if (Array.isArray(b)) {
-        // Array onto not-array overwites.
-        if (!Array.isArray(a)) {
-          return b
-        }
-        return a.concat(b)
-      }
-      if (typeof a !== 'object') {
-        a = {}
-      }
-      for (const [k, v] of Object.entries(b)) {
-        a[k] = combine(a[k], v)
-      }
-      return a
-
-    /* c8 ignore next */
-    default:
-      /* c8 ignore next */
-      throw new TypeError(`Unknown JS type: "${tb}"`)
-  }
-}
-
-/**
  * Gather configurations together from all of the places we can find.
  *
  * @param {string} appName The application name.  All of the characters in the
@@ -351,7 +300,8 @@ export async function sumconfig(appName, opts = {}) {
   const possible = opts?.fileNames ?? fileNames(appName)
   const files = dirs.flatMap(d => possible.map(f => path.join(d, f)))
   const all = await Promise.all(files.map(f => loadFile(appName, f, opts)))
-  return all.reduceRight((t, v) => combine(t, v), {})
+  const combine = opts?.combine ?? Combiners.combine
+  return all.reduceRight(async(t, v) => combine(await t, v), {})
 }
 
 export default sumconfig

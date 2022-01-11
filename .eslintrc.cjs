@@ -2,29 +2,21 @@
 
 module.exports = {
   root: true,
-  extends: ['@cto.af'],
-  ignorePatterns: [
-    'coverage/',
-    'node_modules/',
-    'example/',
-    'docs/scripts/',
+  extends: [
+    '@cto.af/eslint-config/modules',
+    '@cto.af/eslint-config/jsdoc',
   ],
   overrides: [
     {
       files: ['*.js'],
       parserOptions: {
-        sourceType: 'module',
-        ecmaVersion: 2020,
+        ecmaVersion: 2022,
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
       },
       rules: {
-        'node/no-unsupported-features/es-syntax': [
-          'error',
-          {
-            version: '>=12.19',
-            ignores: ['modules'],
-          },
-        ],
         'jsdoc/check-types': 'off',
+        'jsdoc/valid-types': 'off',
       },
     },
   ],

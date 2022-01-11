@@ -1,8 +1,8 @@
 import * as fs from 'fs/promises'
-import {combine, sumconfig} from '../index.js'
 import envPaths from 'env-paths'
 import {pEvent} from 'p-event'
 import path from 'path'
+import {sumconfig} from '../lib/index.js'
 // eslint-disable-next-line node/no-missing-import
 import test from 'ava'
 import url from 'url'
@@ -30,11 +30,6 @@ test.before('create user-scope config', async t => {
 
 test.after.always('destroy user-scope config', async t => {
   await fs.rmdir(config, {recursive: true, force: true})
-})
-
-test('combine', t => {
-  t.deepEqual(combine(undefined, () => ({fn: 12})), {fn: 12})
-  t.deepEqual(combine(12, {fn: 12}), {fn: 12})
 })
 
 test('first', async t => {
