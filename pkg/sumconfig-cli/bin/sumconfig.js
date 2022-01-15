@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 import * as util from 'util'
 import {defaultMeta, sumconfig} from 'sumconfig'

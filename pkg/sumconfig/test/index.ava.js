@@ -57,7 +57,8 @@ test('errors', async t => {
   t.is(w.code, 'sumconfig.suspectName')
 
   await t.throwsAsync(() => sumconfig('foo', {
-    fileNames: ['.foo.bar'],
+    startDir: badDir,
+    fileNames: ['foo.bar'],
   }), {message: /Invalid file, no loader/})
 
   await t.throwsAsync(() => sumconfig('bar', {startDir, stopDir}), {message: /is not a file/})
