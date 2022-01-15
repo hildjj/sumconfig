@@ -1,12 +1,38 @@
 /**
- * @callback Combiner
+ * @callback Combine
  * @param {any} a The previous value.
- * @param {any} b The new value.
+ * @param {import('./types.js').Loaded|any} b The new value.
+ * @param {boolean} top Top-level file, b is a Loaded.
  * @returns {Promise | any} The combined value.
  * @throws {TypeError} Unknown JS type.
  */
 
-export default class Combiners {
+export default class Combiner {
+  /** @type {{[topLevelKey: string]: string}} */
+  top = {}
+
+  /** @type {import('./types').Options} */
+  opts = null
+
+  /**
+   * Create a Combiner.
+   *
+   * @param {import('./types').Options} opts Options.
+   */
+  constructor(opts) {
+    this.opts = opts
+  }
+
+  /**
+   * What was the final source file for a given top-level key?
+   *
+   * @param {string} key The top-level key.
+   * @returns {string} The file name.
+   */
+  source(key) {
+    return this.top[key]
+  }
+
   /**
    * @private
    * @param {any} a Previous value.
@@ -72,10 +98,38 @@ export default class Combiners {
   static overwrite(_, b) {
     return b
   }
-  /* eslint-ensable jsdoc/check-tag-names, jsdoc/no-undefined-types */
 
   /**
-   * @type {Object.<string,Combiner>}
+   * Combine top-level objects loaded from files.
+   *
+   * @param {any} a Previous value.
+   * @param {import('./types.js').Loaded} b New value.
+   * @param {boolean} top Top level.  Should always be true.
+   * @returns {Promise<object>} The combination of a and b.object.
+   * @throws {Error} Invalid state.
+   */
+  async Loaded(a, b, top) {
+    if (!top) {
+      throw new Error('Invalid state')
+    }
+
+    a = (a && (typeof a === 'object')) ? a : {}
+    const opts = (typeof b.options === 'function') ?
+      await b.options.call(this, a, false) :
+      b.options
+    this.opts.log('Source "%s": %O', b.fileName, opts)
+    for (const [k, v] of Object.entries(opts)) {
+      this.top[k] = b.fileName
+      // eslint-disable-next-line require-atomic-updates
+      a[k] = await this.combine(a[k], v, false)
+    }
+    this.opts.log('combined: %O', a)
+    return a
+  }
+
+  /* eslint-ensable jsdoc/check-tag-names, jsdoc/no-undefined-types */
+  /**
+   * @type {Object.<string,Combine>}
    */
   static map = {
     // Try to figure out what to do with all of these:
@@ -91,6 +145,7 @@ export default class Combiners {
     Set: this.Set,
     WeakMap: this.overwrite,
     WeakSet: this.overwrite,
+    Loaded: Combiner.prototype.Loaded,
 
     // These are most likely to be used as the contents of files, for example,
     // so combining them makes no sense in general.
@@ -112,16 +167,19 @@ export default class Combiners {
   }
 
   /**
-   * Combine the contents of different config options together in an opinionated
-   * fashion.
+   * Combine the contents of different config options together in an
+   * opinionated fashion.
    *
-   * @param {any} a The pre-existing value.  Might be undefined.
-   * @param {any} b The new value.
+   * @param {any} a The pre-existing value.  Might
+   *   be undefined.
+   * @param {import('./types.js').Loaded|any} b The new value.
+   * @param {boolean} [top=true] Is this a top-leve combination?  If so, b
+   *   has type Loaded.
    * @returns {Promise<any>} A careful combination of a and b.
-   * @throws {TypeError} Unknown JS type.  Should be impossible until new
-   *   JS types get added again.
+   * @throws {TypeError} Unknown JS type.  Should be impossible until new JS
+   *   types get added again.
    */
-  static async combine(a, b) {
+  async combine(a, b, top = true) {
     const tb = typeof b
 
     switch (tb) {
@@ -133,7 +191,7 @@ export default class Combiners {
       case 'undefined':
         return b
       case 'function':
-        return Combiners.combine(a, await b(a))
+        return this.combine(a, await b.call(this, a), false)
       case 'object': {
         if (!b) {
           // Null overwrites.  Is that correct?
@@ -143,9 +201,9 @@ export default class Combiners {
         if (b instanceof Error) {
           throw b
         }
-        const combiner = Combiners.map[b.constructor?.name]
+        const combiner = Combiner.map[b.constructor?.name]
         if (combiner) {
-          return combiner(a, b)
+          return combiner.call(this, a, b, top)
         }
         if (!a || (typeof a !== 'object')) {
           a = {}
@@ -154,7 +212,7 @@ export default class Combiners {
         for (const [k, v] of Object.entries(b)) {
           // I think this warning is wrong, but look for race conditions.
           // eslint-disable-next-line require-atomic-updates
-          a[k] = await Combiners.combine(a[k], v)
+          a[k] = await this.combine(a[k], v, false)
         }
         return a
       }

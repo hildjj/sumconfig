@@ -27,15 +27,17 @@
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "dependencies": {
-    "env-paths": "^3.0.0",
-    "parse-json": "^6.0.2",
-    "yaml": "^1.10.2"
+    "debug": "4.3.3",
+    "env-paths": "3.0.0",
+    "parse-json": "6.0.2",
+    "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/node": "^17.0.8",
-    "@types/parse-json": "^4.0.0",
-    "p-event": "^5.0.1",
-    "typescript": "^4.5.4"
+    "@types/debug": "4.1.7",
+    "@types/node": "17.0.8",
+    "@types/parse-json": "4.0.0",
+    "p-event": "5.0.1",
+    "typescript": "4.5.4"
   },
   "engines": {
     "node": ">=14.0"
