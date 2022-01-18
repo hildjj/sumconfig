@@ -18,6 +18,7 @@ export function fileNames(appName) {
     `.${appName}rc.mjs`,
     `${appName}.config.yml`,
     `${appName}.config.yaml`,
+    `${appName}.config.json`,
     `${appName}.config.js`,
     `${appName}.config.mjs`,
     'sum.config.js',

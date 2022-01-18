@@ -111,17 +111,14 @@ export default class Loaders {
    *   ignorable error.
    */
   static async loadJs(appName, fileName, opts) {
-    let stat = null
-    try {
-      stat = await fs.stat(fileName)
-    } catch {
-      return {}
-    }
-    if (!stat.isFile()) {
-      throw new Error(`${fileName} is not a file`)
-    }
-    if (opts?.errorOnEmpty && (stat.size === 0)) {
-      throw new Error(`Empty file: "${fileName}"`)
+    if (opts?.errorOnEmpty) {
+      const stat = await fs.stat(fileName)
+      if (!stat.isFile()) {
+        throw new Error(`${fileName} is not a file`)
+      }
+      if (stat.size === 0) {
+        throw new Error(`Empty file: "${fileName}"`)
+      }
     }
 
     // eslint-disable-next-line node/no-unsupported-features/es-syntax

@@ -1,4 +1,8 @@
 /**
+ * Clear all caches retained by the library.
+ */
+export function clearCaches(): void;
+/**
  * Gather configurations together from all of the places we can find.
  *
  * @param {string} appName The application name.  All of the characters in the

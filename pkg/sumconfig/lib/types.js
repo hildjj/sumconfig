@@ -1,3 +1,37 @@
+
+/**
+ * Options that have been loaded from a file.
+ */
+ export class Loaded {
+  /** @type {string} */
+  appName
+
+  /** @type {string} */
+  fileName
+
+  /** @type {string} */
+  loader
+
+  /** @type {function|object} */
+  options
+
+  /**
+   * Create a Loaded.
+   *
+   * @param {string} appName The application name.
+   * @param {string} fileName The source file name.
+   * @param {string} loader The function name used to load.
+   * @param {function|object} options Either a (potentially async) function
+   *   that will return the options, or an object.
+   */
+  constructor(appName, fileName, loader, options) {
+    this.appName = appName
+    this.fileName = fileName
+    this.loader = loader
+    this.options = options
+  }
+}
+
 /**
  * Options for gathering options.
  *
@@ -34,36 +68,3 @@
  */
 
 /** @typedef {Object.<string, Loader>} LoaderMap */
-
-/**
- * Options that have been loaded from a file.
- */
-export class Loaded {
-  /** @type {string} */
-  appName
-
-  /** @type {string} */
-  fileName
-
-  /** @type {string} */
-  loader
-
-  /** @type {function|object} */
-  options
-
-  /**
-   * Create a Loaded.
-   *
-   * @param {string} appName The application name.
-   * @param {string} fileName The source file name.
-   * @param {string} loader The function name used to load.
-   * @param {function|object} options Either a (potentially async) function
-   *   that will return the options, or an object.
-   */
-  constructor(appName, fileName, loader, options) {
-    this.appName = appName
-    this.fileName = fileName
-    this.loader = loader
-    this.options = options
-  }
-}
