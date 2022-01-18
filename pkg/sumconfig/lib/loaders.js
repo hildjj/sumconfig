@@ -5,6 +5,22 @@ import parseJson from 'parse-json'
 import yaml from 'yaml'
 
 export default class Loaders {
+  // Cache non-mjs file contents.
+  // 1) .mjs files will get cached by the loader
+  // 2) package.json and sum.config.[m]js files return different results
+  //    based on the appName, which is the whole reason for doing caching.
+  /**
+   * @type {{[fileName: string]: import('./types.js').OptInitial}}
+   */
+  static cache = {}
+
+  /**
+   * Clear the loader cache.
+   */
+  static clearCache() {
+    Loaders.cache = {}
+  }
+
   /**
    * @private
    * @param {string} f The full path of the file to read from.  MUST be in utf8.
@@ -12,15 +28,9 @@ export default class Loaders {
    * @returns {Promise<string>} The file contents.
    */
   static async readFile(f, opts) {
-    let src = null
-    try {
-      src = await fs.readFile(f, 'utf8')
-    } catch (e) {
-      if (e?.code !== 'ENOENT') {
-        throw e
-      }
-      return null
-    }
+    // Throws various errors, but ENOENT isn't special, because we shouldn't
+    // be trying to read non-existant files.
+    const src = await fs.readFile(f, 'utf8')
     if (src.length === 0) {
       if (opts?.errorOnEmpty) {
         throw new Error(`Empty file: "${f}"`)
@@ -41,14 +51,22 @@ export default class Loaders {
    *   ignorable error.
    */
   static async loadYaml(appName, fileName, opts) {
+    let res = Loaders.cache[fileName]
+    if (res) {
+      return res
+    }
     const src = await Loaders.readFile(fileName, opts)
     if (!src) {
       return {}
     }
     try {
-      return yaml.parse(src, {
+      res = yaml.parse(src, {
         prettyErrors: true,
       })
+      // This should be safe enough.
+      // eslint-disable-next-line require-atomic-updates
+      Loaders.cache[fileName] = res
+      return res
     } catch (er) {
       er.message = er.message.replace(
         /, column (?<col>\d+):$/m,
@@ -69,11 +87,19 @@ export default class Loaders {
    *   ignorable error.
    */
   static async loadJson(appName, fileName, opts) {
+    let res = Loaders.cache[fileName]
+    if (res) {
+      return res
+    }
     const src = await Loaders.readFile(fileName, opts)
     if (!src) {
       return {}
     }
-    return parseJson(src, fileName)
+    res = parseJson(src, fileName)
+    // This should be safe enough.
+    // eslint-disable-next-line require-atomic-updates
+    Loaders.cache[fileName] = res
+    return res
   }
 
   /**
@@ -107,8 +133,8 @@ export default class Loaders {
    * @param {string} appName The application name.
    * @param {string} fileName The full path of the file to load.
    * @param {import('./types').Options} opts Options for loading.
-   * @returns {Promise<object>} The loaded config, or {} if there was an
-   *   ignorable error.
+   * @returns {Promise<import('./types.js').OptInitial>} The loaded config, or
+   *   {} if there was an ignorable error.
    */
   static async loadJs(appName, fileName, opts) {
     if (opts?.errorOnEmpty) {
@@ -121,6 +147,7 @@ export default class Loaders {
       }
     }
 
+    // Let the module system do the caching.
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const mod = await import(fileName)
     if (!mod.default) {

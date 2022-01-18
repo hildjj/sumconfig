@@ -13,6 +13,7 @@ export {
  */
 export function clearCaches() {
   Walker.clearCache()
+  Loaders.clearCache()
 }
 
 /**

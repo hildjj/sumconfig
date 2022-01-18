@@ -14,7 +14,8 @@
     "clean": "rimraf coverage node_modules pkg/*/node_modules pkg/*/coverage pkg/*/types",
     "coverage": "c8 ava",
     "docs": "typedoc  --tsconfig tsconfig.json pkg/*/lib/*.js",
-    "lint": "eslint . --ext js,cjs,mjs"
+    "lint": "eslint . --ext js,cjs,mjs",
+    "prep": "npm run lint && pnpm run -r --if-present types && npm run docs"
   },
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",

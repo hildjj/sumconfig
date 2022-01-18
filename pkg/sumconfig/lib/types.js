@@ -12,8 +12,11 @@ export class Loaded {
   /** @type {string} */
   loader
 
-  /** @type {function|object} */
+  /** @type {OptInitial} */
   options
+
+  /** @type {Date} */
+  stamp
 
   /**
    * Create a Loaded.
@@ -21,7 +24,7 @@ export class Loaded {
    * @param {string} appName The application name.
    * @param {string} fileName The source file name.
    * @param {string} loader The function name used to load.
-   * @param {function|object} options Either a (potentially async) function
+   * @param {OptInitial} options Either a (potentially async) function
    *   that will return the options, or an object.
    */
   constructor(appName, fileName, loader, options) {
@@ -29,6 +32,7 @@ export class Loaded {
     this.fileName = fileName
     this.loader = loader
     this.options = options
+    this.stamp = new Date()
   }
 }
 
@@ -63,8 +67,10 @@ export class Loaded {
  * @param {string} appName The application name.
  * @param {string} fileName The full path of the file to load.
  * @param {Options} opts Options for loading.
- * @returns {Promise<function|object>} The loaded config, or {} if there was an
+ * @returns {Promise<OptInitial>} The loaded config, or {} if there was an
  *   ignorable error.
  */
 
 /** @typedef {Object.<string, Loader>} LoaderMap */
+
+/** @typedef {object | function} OptInitial */

@@ -1,5 +1,15 @@
 export default class Loaders {
     /**
+     * @type {{[fileName: string]: import('./types.js').OptInitial}}
+     */
+    static cache: {
+        [fileName: string]: any;
+    };
+    /**
+     * Clear the loader cache.
+     */
+    static clearCache(): void;
+    /**
      * @private
      * @param {string} f The full path of the file to read from.  MUST be in utf8.
      * @param {import('./types').Options} opts Options.
@@ -47,8 +57,8 @@ export default class Loaders {
      * @param {string} appName The application name.
      * @param {string} fileName The full path of the file to load.
      * @param {import('./types').Options} opts Options for loading.
-     * @returns {Promise<object>} The loaded config, or {} if there was an
-     *   ignorable error.
+     * @returns {Promise<import('./types.js').OptInitial>} The loaded config, or
+     *   {} if there was an ignorable error.
      */
     private static loadJs;
     /**

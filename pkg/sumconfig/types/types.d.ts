@@ -8,18 +8,20 @@ export class Loaded {
      * @param {string} appName The application name.
      * @param {string} fileName The source file name.
      * @param {string} loader The function name used to load.
-     * @param {function|object} options Either a (potentially async) function
+     * @param {OptInitial} options Either a (potentially async) function
      *   that will return the options, or an object.
      */
-    constructor(appName: string, fileName: string, loader: string, options: Function | object);
+    constructor(appName: string, fileName: string, loader: string, options: OptInitial);
     /** @type {string} */
     appName: string;
     /** @type {string} */
     fileName: string;
     /** @type {string} */
     loader: string;
-    /** @type {function|object} */
-    options: Function | object;
+    /** @type {OptInitial} */
+    options: OptInitial;
+    /** @type {Date} */
+    stamp: Date;
 }
 /**
  * Options for gathering options.
@@ -70,7 +72,8 @@ export type Options = {
      */
     log: (formatter: any, ...args: any[]) => void;
 };
-export type Loader = (appName: string, fileName: string, opts: Options) => Promise<Function | object>;
+export type Loader = (appName: string, fileName: string, opts: Options) => Promise<OptInitial>;
 export type LoaderMap = {
     [x: string]: Loader;
 };
+export type OptInitial = object | Function;

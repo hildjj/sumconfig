@@ -42,6 +42,8 @@ test.after.always('destroy user-scope config', async t => {
 test('first', async t => {
   const res = await sumconfig('foo', {startDir, stopDirs})
   t.snapshot(res)
+  const cached = await sumconfig('foo', {startDir, stopDirs})
+  t.truthy(cached)
 })
 
 test('stopPeers', async t => {
