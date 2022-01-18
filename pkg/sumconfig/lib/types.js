@@ -2,7 +2,7 @@
 /**
  * Options that have been loaded from a file.
  */
- export class Loaded {
+export class Loaded {
   /** @type {string} */
   appName
 
