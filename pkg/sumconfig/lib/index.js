@@ -46,11 +46,12 @@ export async function sumconfig(appName, opts) {
     files.map(f => Loaders.loadFile(appName, f, opts))
   )
   const combiner = new Combiner(opts)
-  // @ts-ignore
-  return all.reduceRight(async(t, loaded) => {
-    const ret = await combiner.combine(await t, loaded)
-    return ret
-  }, undefined)
+  let ret = undefined
+  all.reverse()
+  for (const loaded of all) {
+    ret = await combiner.combine(ret, loaded)
+  }
+  return ret
 }
 
 export default sumconfig

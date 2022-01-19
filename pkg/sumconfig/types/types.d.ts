@@ -20,8 +20,8 @@ export class Loaded {
     loader: string;
     /** @type {OptInitial} */
     options: OptInitial;
-    /** @type {Date} */
     stamp: Date;
+    root: boolean;
 }
 /**
  * Options for gathering options.
@@ -71,6 +71,17 @@ export type Options = {
      * environment variable `DEBUG=sumconfig`.
      */
     log: (formatter: any, ...args: any[]) => void;
+    /**
+     * Ignore user-wide configuration files
+     * (in $XDG_CONFIG_HOME, for example).
+     */
+    ignoreUser?: boolean;
+    /**
+     * Stop when this key is in a config, is
+     * a boolean, and its value is false.  Set to null to turn off this
+     * behavior.
+     */
+    stopKey?: string | null;
 };
 export type Loader = (appName: string, fileName: string, opts: Options) => Promise<OptInitial>;
 export type LoaderMap = {

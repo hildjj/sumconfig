@@ -118,6 +118,17 @@ export default class Combiner {
       await b.options.call(this, a, false) :
       b.options
     this.opts.log('Source "%s": %O', b.fileName, opts)
+    if (this.opts.stopKey) {
+      const root = opts[this.opts.stopKey]
+      if ((typeof root === 'boolean') && root) {
+        // Not optimal, since all of the previous files will have been read,
+        // and their functions called.
+        this.opts.log(`Discarding previous options because ${this.opts.stopKey} key found`)
+        a = {}
+        b.root = true
+      }
+    }
+
     for (const [k, v] of Object.entries(opts)) {
       this.top[k] = b.fileName
       // eslint-disable-next-line require-atomic-updates

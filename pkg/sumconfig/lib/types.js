@@ -15,8 +15,8 @@ export class Loaded {
   /** @type {OptInitial} */
   options
 
-  /** @type {Date} */
-  stamp
+  stamp = new Date()
+  root = false
 
   /**
    * Create a Loaded.
@@ -32,7 +32,6 @@ export class Loaded {
     this.fileName = fileName
     this.loader = loader
     this.options = options
-    this.stamp = new Date()
   }
 }
 
@@ -60,6 +59,11 @@ export class Loaded {
  * @property {(formatter: any, ...args: any[]) => void} log Logging function.
  *   Defaults to debug('sumconfig'), which allows turning on logging with the
  *   environment variable `DEBUG=sumconfig`.
+ * @property {boolean} [ignoreUser=false] Ignore user-wide configuration files
+ *   (in $XDG_CONFIG_HOME, for example).
+ * @property {string?} [stopKey='root'] Stop when this key is in a config, is
+ *    a boolean, and its value is false.  Set to null to turn off this
+ *    behavior.
  */
 
 /**

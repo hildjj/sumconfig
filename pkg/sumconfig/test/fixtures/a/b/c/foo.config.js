@@ -4,5 +4,6 @@ export default {
   bigint: 42n,
   string: 'foo',
   symbol: Symbol.for('foo.symbol'),
+  testRoot: true,
   undefined,
 }

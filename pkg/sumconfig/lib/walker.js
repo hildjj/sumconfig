@@ -93,7 +93,9 @@ export default class Walker {
       dir = await addDir(dir)
     }
 
-    await addDir(envPaths(appName).config)
+    if (!opts.ignoreUser) {
+      await addDir(envPaths(appName).config)
+    }
     return p
   }
 }

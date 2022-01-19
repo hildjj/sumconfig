@@ -36,11 +36,12 @@ export function fileNames(appName) {
 export function defaultMeta(appName) {
   return {
     errorOnEmpty: false,
-    startDir: process.cwd(),
-    stopDirs: [os.homedir()],
-    stopPeers: ['.git', '.hg'],
     fileNames: appName ? fileNames(appName) : [],
     loaders: Loaders.map,
     log: debug('sumconfig'),
+    startDir: process.cwd(),
+    stopDirs: [os.homedir()],
+    stopKey: 'root',
+    stopPeers: ['.git', '.hg'],
   }
 }
