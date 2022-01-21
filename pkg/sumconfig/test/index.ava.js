@@ -1,5 +1,5 @@
 import * as fs from 'fs/promises'
-import {clearCaches, sumconfig} from '../lib/index.js'
+import SumConfig from '../lib/index.js'
 import Walker from '../lib/walker.js'
 import envPaths from 'env-paths'
 import {pEvent} from 'p-event'
@@ -13,6 +13,11 @@ const stopDirs = [url.fileURLToPath(new URL('fixtures', import.meta.url))]
 const badDir = url.fileURLToPath(new URL('fixtures/bad', import.meta.url))
 const UNUSED_APP = '______UNUSED_____TEST_____APP____'
 const {config} = envPaths(UNUSED_APP)
+
+function sumconfig(appName, opts) {
+  const sc = new SumConfig(appName, opts)
+  return sc.gather()
+}
 
 test.before('create user-scope config', async t => {
   try {
@@ -31,7 +36,7 @@ test.before('create user-scope config', async t => {
 
 test.after('clear cache', t => {
   t.true(Object.keys(Walker.cache).length > 0)
-  clearCaches()
+  SumConfig.clearCaches()
   t.is(Object.keys(Walker.cache).length, 0)
 })
 
@@ -70,7 +75,7 @@ test('user', async t => {
 })
 
 test('errors', async t => {
-  await t.throwsAsync(() => sumconfig('.foo'), {message: /Invalid appName/})
+  await t.throws(() => sumconfig('.foo'), {message: /Invalid appName/})
 
   const warn = pEvent(process, 'warning')
   await sumconfig('Poo\u{1F4A9}', {startDir, stopDirs})

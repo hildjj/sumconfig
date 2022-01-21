@@ -10,6 +10,9 @@
     "directory": "pkg/sumconfig"
   },
   "homepage": "https://github.com/hildjj/sumconfig/tree/main/pkg/sumconfig",
+  "bugs": {
+    "url": "https://github.com/hildjj/sumconfig/issues"
+  },
   "types": "types/index.d.ts",
   "scripts": {
     "test": "ava",

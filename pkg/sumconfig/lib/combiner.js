@@ -27,7 +27,7 @@ export default class Combiner {
    * What was the final source file for a given top-level key?
    *
    * @param {string} key The top-level key.
-   * @returns {string} The file name.
+   * @returns {string} The fully-qualified file name.
    */
   source(key) {
     return this.top[key]

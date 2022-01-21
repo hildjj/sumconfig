@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
+import * as path from 'path'
 import * as util from 'util'
-import {defaultMeta, sumconfig} from 'sumconfig'
 import {Command} from 'commander'
+import SumConfig from 'sumconfig'
 
 /* Stop configuring yourself.  Stop configuring yourself. */
 const self = 'sumconfig'
-const metaConfig = defaultMeta(self)
+const metaConfig = SumConfig.defaultMeta(self)
 metaConfig.fileNames = [
   'sum.config.js',
   'sum.config.mjs',
@@ -21,13 +22,14 @@ program.command('defaults')
   .argument('<packageName>', 'The name of the package to search for')
   .description('Get the default options')
   .action(packageName => {
-    console.log(defaultMeta(packageName))
+    console.log(SumConfig.defaultMeta(packageName))
   })
 
 program
   .command('get', {isDefault: true})
   .argument('<packageName>', 'The name of the package to search for')
   .description('Get the combined configuration for package')
+  .option('-s,--source', 'Output the source file for each option set')
   .option(
     '-e, --error-on-empty',
     'Throw an error if a config file exists, but it is empty',
@@ -39,7 +41,7 @@ program
     metaConfig.startDir
   )
   .option(
-    '--start-dir <path>',
+    '--stop-dir <path>',
     'Stop searching when this directory is reached',
     metaConfig.stopDir
   )
@@ -59,7 +61,7 @@ program
     'Remove the current list of file names to be searched.  Requires -f.'
   )
   .action(async(packageName, opts, cmd) => {
-    const m = defaultMeta(packageName)
+    const m = SumConfig.defaultMeta(packageName)
     if (opts.files) {
       opts.fileNames = opts.ResetFileNames ?
         [...opts.files, ...m.fileNames] :
@@ -71,9 +73,14 @@ program
         code: 'sumconfig.required',
       })
     }
+
+    const source = Boolean(opts.source)
+    delete opts.source
+
+    const msc = new SumConfig(self, metaConfig)
     const config = {
       ...m,
-      ...sumconfig(self, metaConfig),
+      ...await msc.gather(self, metaConfig),
       ...opts,
     }
 
@@ -82,12 +89,35 @@ program
       config.log.enabled = true
     }
 
-    console.log(util.inspect(await sumconfig(packageName, config), {
-      depth: Infinity,
-      colors: process.stdout.isTTY,
-      maxArrayLength: Infinity,
-      maxStringLength: Infinity,
-    }))
+    const sc = new SumConfig(packageName, config)
+    const sum = await sc.gather()
+    const cwd = process.cwd()
+    if (source) {
+      const src = {}
+      for (const [k, v] of Object.entries(sum)) {
+        const f = sc.source(k)
+        src[f] ??= {}
+        src[f][k] = v
+      }
+      for (const [f, o] of Object.entries(src)) {
+        console.log(`from "${path.relative(cwd, f)}":`)
+        for (const [k, v] of Object.entries(o)) {
+          console.log(`  ${k}:`, util.inspect(v, {
+            depth: Infinity,
+            colors: process.stdout.isTTY,
+            maxArrayLength: Infinity,
+            maxStringLength: Infinity,
+          }))
+        }
+      }
+    } else {
+      console.log(util.inspect(sum, {
+        depth: Infinity,
+        colors: process.stdout.isTTY,
+        maxArrayLength: Infinity,
+        maxStringLength: Infinity,
+      }))
+    }
   })
 
 await program.parseAsync()
