@@ -14,10 +14,7 @@ const badDir = url.fileURLToPath(new URL('fixtures/bad', import.meta.url))
 const UNUSED_APP = '______UNUSED_____TEST_____APP____'
 const {config} = envPaths(UNUSED_APP)
 
-function sumconfig(appName, opts) {
-  const sc = new SumConfig(appName, opts)
-  return sc.gather()
-}
+const {sumconfig} = SumConfig
 
 test.before('create user-scope config', async t => {
   try {

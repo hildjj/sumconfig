@@ -35,6 +35,19 @@ export default class SumConfig {
   }
 
   /**
+   * Gather all config files without keeping source data.
+   *
+   * @param {string} appName The application name.  All of the characters in
+   *   the name should be safe for use in a filename.
+   * @param {import('./types').Options} [opts] Options.
+   * @returns {Promise<object>} The combined configurations.
+   */
+  static sumconfig(appName, opts) {
+    const sc = new SumConfig(appName, opts)
+    return sc.gather()
+  }
+
+  /**
    * Clear all caches retained by the library.
    */
   static clearCaches() {

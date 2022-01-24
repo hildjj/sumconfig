@@ -1,6 +1,15 @@
 export default class SumConfig {
     static defaultMeta: typeof dm;
     /**
+     * Gather all config files without keeping source data.
+     *
+     * @param {string} appName The application name.  All of the characters in
+     *   the name should be safe for use in a filename.
+     * @param {import('./types').Options} [opts] Options.
+     * @returns {Promise<object>} The combined configurations.
+     */
+    static sumconfig(appName: string, opts?: import('./types').Options): Promise<object>;
+    /**
      * Clear all caches retained by the library.
      */
     static clearCaches(): void;
