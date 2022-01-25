@@ -121,7 +121,9 @@ export default function cli(stdout = process.stdout) {
         const src = {}
         for (const [k, v] of Object.entries(sum)) {
           const f = sc.source(k)
-          src[f] ??= {}
+          if (src[f] == null) {
+            src[f] = {}
+          }
           src[f][k] = v
         }
         for (const [f, o] of Object.entries(src)) {
