@@ -15,5 +15,8 @@
     "debug": "4.3.3",
     "sumconfig": "0.0.1",
     "sumconfig-set": "0.0.1"
+  },
+  "engines": {
+    "node": ">=14.0"
   }
 }

@@ -3,5 +3,7 @@
   "base": {
     "foo": 1,
   },
-  array: 16
+  array: 16,
+  # Make sure something survives this file
+  from .foorc: true
 }
