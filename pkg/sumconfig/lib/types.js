@@ -33,6 +33,46 @@ export class Loaded {
     this.loader = loader
     this.options = options
   }
+
+  /**
+   * Combine top-level objects loaded from files.
+   *
+   * @param {any} prev Previous value.
+   * @param {any} combiner The combiner.  Marked as "any" to prevent circular
+   *   dependency.
+   * @param {boolean} top Top level.  Should always be true.
+   * @returns {Promise<object>} The combination of a and b.object.
+   * @throws {Error} Invalid state.
+   */
+  async [Symbol.for('sumconfig.combiner')](prev, combiner, top) {
+    if (!top) {
+      throw new Error('Invalid state')
+    }
+
+    prev = (prev && (typeof prev === 'object')) ? prev : {}
+    const opts = (typeof this.options === 'function') ?
+      await this.options(prev, combiner, false) :
+      this.options
+    combiner.opts.log('Source "%s": %O', this.fileName, opts)
+    if (combiner.opts.stopKey) {
+      const root = opts[combiner.opts.stopKey]
+      if ((typeof root === 'boolean') && root) {
+        // Not optimal, since all of the previous files will have been read,
+        // and their functions called.
+        combiner.opts.log(`Discarding previous options because ${combiner.opts.stopKey} key found`)
+        prev = {}
+        this.root = true
+      }
+    }
+
+    for (const [k, v] of Object.entries(opts)) {
+      combiner.top[k] = this.fileName
+      // eslint-disable-next-line require-atomic-updates
+      prev[k] = await combiner.combine(prev[k], v, false)
+    }
+    combiner.opts.log('combined: %O', prev)
+    return prev
+  }
 }
 
 /**

@@ -8,6 +8,8 @@
  */
 
 export default class Combiner {
+  static COMBINER = Symbol.for('sumconfig.combiner')
+
   /** @type {{[topLevelKey: string]: string}} */
   top = {}
 
@@ -90,52 +92,13 @@ export default class Combiner {
 
   /**
    * @private
-   * @template T
-   * @param {any} _ Previous value.
-   * @param {T} b New value.
-   * @returns {T} The new value.
+   * @param {Promise<any>|any} a Previous value.
+   * @param {Promise<any>} b New value.
+   * @param {boolean} top Should always be false.
+   * @returns {Promise<any>} The combined value.
    */
-  static overwrite(_, b) {
-    return b
-  }
-
-  /**
-   * Combine top-level objects loaded from files.
-   *
-   * @param {any} a Previous value.
-   * @param {import('./types.js').Loaded} b New value.
-   * @param {boolean} top Top level.  Should always be true.
-   * @returns {Promise<object>} The combination of a and b.object.
-   * @throws {Error} Invalid state.
-   */
-  async Loaded(a, b, top) {
-    if (!top) {
-      throw new Error('Invalid state')
-    }
-
-    a = (a && (typeof a === 'object')) ? a : {}
-    const opts = (typeof b.options === 'function') ?
-      await b.options.call(this, a, false) :
-      b.options
-    this.opts.log('Source "%s": %O', b.fileName, opts)
-    if (this.opts.stopKey) {
-      const root = opts[this.opts.stopKey]
-      if ((typeof root === 'boolean') && root) {
-        // Not optimal, since all of the previous files will have been read,
-        // and their functions called.
-        this.opts.log(`Discarding previous options because ${this.opts.stopKey} key found`)
-        a = {}
-        b.root = true
-      }
-    }
-
-    for (const [k, v] of Object.entries(opts)) {
-      this.top[k] = b.fileName
-      // eslint-disable-next-line require-atomic-updates
-      a[k] = await this.combine(a[k], v, false)
-    }
-    this.opts.log('combined: %O', a)
-    return a
+  async Promise(a, b, top) {
+    return this.combine(a, await b, top)
   }
 
   /* eslint-ensable jsdoc/check-tag-names, jsdoc/no-undefined-types */
@@ -146,35 +109,12 @@ export default class Combiner {
     // Try to figure out what to do with all of these:
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
     Array: this.Array,
-    Date: this.overwrite,
     BigInt: this.boxed,
     String: this.boxed,
     Number: this.boxed,
-    RegExp: this.overwrite,
-    Promise: this.overwrite, // Ha.  Since combine is async...
+    Promise: Combiner.prototype.Promise,
     Map: this.Map,
     Set: this.Set,
-    WeakMap: this.overwrite,
-    WeakSet: this.overwrite,
-    Loaded: Combiner.prototype.Loaded,
-
-    // These are most likely to be used as the contents of files, for example,
-    // so combining them makes no sense in general.
-    ArrayBuffer: this.overwrite,
-    SharedArrayBuffer: this.overwrite,
-    DataView: this.overwrite,
-    BigInt64Array: this.overwrite,
-    BigUint64Array: this.overwrite,
-    Float32Array: this.overwrite,
-    Float64Array: this.overwrite,
-    Int16Array: this.overwrite,
-    Int32Array: this.overwrite,
-    Int8Array: this.overwrite,
-    Uint16Array: this.overwrite,
-    Uint32Array: this.overwrite,
-    Uint8Array: this.overwrite,
-    Uint8ClampedArray: this.overwrite,
-    Buffer: this.overwrite,
   }
 
   /**
@@ -202,20 +142,30 @@ export default class Combiner {
       case 'undefined':
         return b
       case 'function':
-        return this.combine(a, await b.call(this, a), false)
+        return this.combine(a, await b(a, this, top), false)
       case 'object': {
         if (!b) {
           // Null overwrites.  Is that correct?
           return b
         }
-        // Not in map so that whatever error subclass you have will work.
         if (b instanceof Error) {
           throw b
         }
-        const combiner = Combiner.map[b.constructor?.name]
-        if (combiner) {
-          return combiner.call(this, a, b, top)
+        if (typeof b[Combiner.COMBINER] === 'function') {
+          return b[Combiner.COMBINER](a, this, top)
         }
+        const bcn = b.constructor?.name
+        if (bcn && (bcn !== 'Object')) {
+          const combiner = Combiner.map[bcn]
+          if (combiner) {
+            return combiner.call(this, a, b, top)
+          }
+
+          // For anything with a prototytpe that isn't special, overwrite.
+          // Examples: Date, RegExp, etc.
+          return b
+        }
+
         if (!a || (typeof a !== 'object')) {
           a = {}
         }
