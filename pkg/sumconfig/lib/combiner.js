@@ -1,25 +1,25 @@
 /**
  * @callback Combine
  * @param {any} a The previous value.
- * @param {import('./types.js').Loaded|any} b The new value.
+ * @param {import('./loaded').Loaded|any} b The new value.
  * @param {boolean} top Top-level file, b is a Loaded.
  * @returns {Promise | any} The combined value.
  * @throws {TypeError} Unknown JS type.
  */
 
-export default class Combiner {
+export class Combiner {
   static COMBINER = Symbol.for('sumconfig.combiner')
 
   /** @type {{[topLevelKey: string]: string}} */
   top = {}
 
-  /** @type {import('./types').Options} */
+  /** @type {import('./loaded').Options} */
   opts = null
 
   /**
    * Create a Combiner.
    *
-   * @param {import('./types').Options} opts Options.
+   * @param {import('./loaded').Options} opts Options.
    */
   constructor(opts) {
     this.opts = opts
@@ -123,7 +123,7 @@ export default class Combiner {
    *
    * @param {any} a The pre-existing value.  Might
    *   be undefined.
-   * @param {import('./types.js').Loaded|any} b The new value.
+   * @param {import('./loaded.js').Loaded|any} b The new value.
    * @param {boolean} [top=true] Is this a top-leve combination?  If so, b
    *   has type Loaded.
    * @returns {Promise<any>} A careful combination of a and b.

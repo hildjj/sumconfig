@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises'
 import SumConfig from '../lib/index.js'
-import Walker from '../lib/walker.js'
+import {Walker} from '../lib/walker.js'
 import envPaths from 'env-paths'
 import {pEvent} from 'p-event'
 import path from 'path'

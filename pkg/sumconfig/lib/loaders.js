@@ -1,16 +1,16 @@
 import * as fs from 'fs/promises'
 import * as path from 'path'
-import {Loaded} from './types.js'
+import {Loaded} from './loaded.js'
 import parseJson from 'parse-json'
 import yaml from 'yaml'
 
-export default class Loaders {
+export class Loaders {
   // Cache non-mjs file contents.
   // 1) .mjs files will get cached by the loader
   // 2) package.json and sum.config.[m]js files return different results
   //    based on the appName, which is the whole reason for doing caching.
   /**
-   * @type {{[fileName: string]: import('./types.js').OptInitial}}
+   * @type {{[fileName: string]: import('./loaded').OptInitial}}
    */
   static cache = {}
 
@@ -24,7 +24,7 @@ export default class Loaders {
   /**
    * @private
    * @param {string} f The full path of the file to read from.  MUST be in utf8.
-   * @param {import('./types').Options} opts Options.
+   * @param {import('./loaded').Options} opts Options.
    * @returns {Promise<string>} The file contents.
    */
   static async readFile(f, opts) {
@@ -46,7 +46,7 @@ export default class Loaders {
    * @private
    * @param {string} appName The application name.
    * @param {string} fileName The full path of the file to load.
-   * @param {import('./types').Options} opts Options for loading.
+   * @param {import('./loaded').Options} opts Options for loading.
    * @returns {Promise<object>} The loaded config, or {} if there was an
    *   ignorable error.
    */
@@ -82,7 +82,7 @@ export default class Loaders {
    * @private
    * @param {string} appName The application name.
    * @param {string} fileName The full path of the file to load.
-   * @param {import('./types').Options} opts Options for loading.
+   * @param {import('./loaded').Options} opts Options for loading.
    * @returns {Promise<object>} The loaded config, or {} if there was an
    *   ignorable error.
    */
@@ -108,7 +108,7 @@ export default class Loaders {
    * @private
    * @param {string} appName The application name.
    * @param {string} fileName The full path of the file to load.
-   * @param {import('./types').Options} opts Options for loading.
+   * @param {import('./loaded').Options} opts Options for loading.
    * @returns {Promise<object>} The loaded config, or {} if there was an
    *   ignorable error.
    */
@@ -132,8 +132,8 @@ export default class Loaders {
    * @private
    * @param {string} appName The application name.
    * @param {string} fileName The full path of the file to load.
-   * @param {import('./types').Options} opts Options for loading.
-   * @returns {Promise<import('./types.js').OptInitial>} The loaded config, or
+   * @param {import('./loaded').Options} opts Options for loading.
+   * @returns {Promise<import('./loaded').OptInitial>} The loaded config, or
    *   {} if there was an ignorable error.
    */
   static async loadJs(appName, fileName, opts) {
@@ -162,7 +162,7 @@ export default class Loaders {
   /**
    * The default loaders.
    *
-   * @type {import('./types').LoaderMap}
+   * @type {import('./loaded').LoaderMap}
    */
   static map = {
     '': this.loadYaml,
@@ -180,7 +180,7 @@ export default class Loaders {
    *
    * @param {string} appName The application name.
    * @param {string} fileName The full path of the file to load.
-   * @param {import('./types').Options} opts Options for loading.
+   * @param {import('./loaded').Options} opts Options for loading.
    * @returns {Promise<Loaded>} The loaded config, or {} if
    *   there was an ignorable error.
    * @throws {Error} No known loader for this file type.

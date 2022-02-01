@@ -1,12 +1,13 @@
 /**
  * @callback Combine
  * @param {any} a The previous value.
- * @param {import('./types.js').Loaded|any} b The new value.
+ * @param {import('./loaded').Loaded|any} b The new value.
  * @param {boolean} top Top-level file, b is a Loaded.
  * @returns {Promise | any} The combined value.
  * @throws {TypeError} Unknown JS type.
  */
-export default class Combiner {
+export class Combiner {
+    static COMBINER: symbol;
     /**
      * @private
      * @param {any} a Previous value.
@@ -38,14 +39,6 @@ export default class Combiner {
      */
     private static boxed;
     /**
-     * @private
-     * @template T
-     * @param {any} _ Previous value.
-     * @param {T} b New value.
-     * @returns {T} The new value.
-     */
-    private static overwrite;
-    /**
      * @type {Object.<string,Combine>}
      */
     static map: {
@@ -54,15 +47,15 @@ export default class Combiner {
     /**
      * Create a Combiner.
      *
-     * @param {import('./types').Options} opts Options.
+     * @param {import('./loaded').Options} opts Options.
      */
-    constructor(opts: import('./types').Options);
+    constructor(opts: import('./loaded').Options);
     /** @type {{[topLevelKey: string]: string}} */
     top: {
         [topLevelKey: string]: string;
     };
-    /** @type {import('./types').Options} */
-    opts: import('./types').Options;
+    /** @type {import('./loaded').Options} */
+    opts: import('./loaded').Options;
     /**
      * What was the final source file for a given top-level key?
      *
@@ -71,28 +64,26 @@ export default class Combiner {
      */
     source(key: string): string;
     /**
-     * Combine top-level objects loaded from files.
-     *
-     * @param {any} a Previous value.
-     * @param {import('./types.js').Loaded} b New value.
-     * @param {boolean} top Top level.  Should always be true.
-     * @returns {Promise<object>} The combination of a and b.object.
-     * @throws {Error} Invalid state.
+     * @private
+     * @param {Promise<any>|any} a Previous value.
+     * @param {Promise<any>} b New value.
+     * @param {boolean} top Should always be false.
+     * @returns {Promise<any>} The combined value.
      */
-    Loaded(a: any, b: import('./types.js').Loaded, top: boolean): Promise<object>;
+    private Promise;
     /**
      * Combine the contents of different config options together in an
      * opinionated fashion.
      *
      * @param {any} a The pre-existing value.  Might
      *   be undefined.
-     * @param {import('./types.js').Loaded|any} b The new value.
+     * @param {import('./loaded.js').Loaded|any} b The new value.
      * @param {boolean} [top=true] Is this a top-leve combination?  If so, b
      *   has type Loaded.
      * @returns {Promise<any>} A careful combination of a and b.
      * @throws {TypeError} Unknown JS type.  Should be impossible until new JS
      *   types get added again.
      */
-    combine(a: any, b: import('./types.js').Loaded | any, top?: boolean): Promise<any>;
+    combine(a: any, b: import('./loaded.js').Loaded | any, top?: boolean): Promise<any>;
 }
-export type Combine = (a: any, b: import('./types.js').Loaded | any, top: boolean) => Promise<any> | any;
+export type Combine = (a: any, b: import('./loaded').Loaded | any, top: boolean) => Promise<any> | any;

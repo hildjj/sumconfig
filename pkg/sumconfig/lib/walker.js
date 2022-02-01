@@ -2,7 +2,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import envPaths from 'env-paths'
 
-export default class Walker {
+export class Walker {
   /** @type {Object<string,string[]|Promise<string[]>>} */
   static cache = {}
 
@@ -40,7 +40,7 @@ export default class Walker {
    * of the filenames from opts that exist on those paths.
    *
    * @param {string} appName The application name.
-   * @param {import('./types').Options} opts Options.
+   * @param {import('./loaded').Options} opts Options.
    * @returns {Promise<string[]>} The directories.
    */
   static async allDirs(appName, opts) {

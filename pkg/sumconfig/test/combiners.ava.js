@@ -1,5 +1,5 @@
-import Combiner from '../lib/combiner.js'
-import {Loaded} from '../lib/types.js'
+import {Combiner} from '../lib/combiner.js'
+import {Loaded} from '../lib/loaded.js'
 
 // eslint-disable-next-line node/no-missing-import
 import test from 'ava'

@@ -1,5 +1,5 @@
 import * as os from 'os'
-import Loaders from './loaders.js'
+import {Loaders} from './loaders.js'
 import debug from 'debug'
 
 /**
@@ -31,7 +31,7 @@ export function fileNames(appName) {
  * The default configuration for sumconfig.
  *
  * @param {string} [appName] Name of the app.
- * @returns {import('./types').Options} The default options for this appName.
+ * @returns {import('./loaded').Options} The default options for this appName.
  */
 export function defaultMeta(appName) {
   return {

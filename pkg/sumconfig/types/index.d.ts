@@ -5,10 +5,10 @@ export default class SumConfig {
      *
      * @param {string} appName The application name.  All of the characters in
      *   the name should be safe for use in a filename.
-     * @param {import('./types').Options} [opts] Options.
+     * @param {import('./loaded').Options} [opts] Options.
      * @returns {Promise<object>} The combined configurations.
      */
-    static sumconfig(appName: string, opts?: import('./types').Options): Promise<object>;
+    static sumconfig(appName: string, opts?: import('./loaded').Options): Promise<object>;
     /**
      * Clear all caches retained by the library.
      */
@@ -18,9 +18,9 @@ export default class SumConfig {
      *
      * @param {string} appName The application name.  All of the characters in
      *   the name should be safe for use in a filename.
-     * @param {import('./types').Options} [opts] Options.
+     * @param {import('./loaded').Options} [opts] Options.
      */
-    constructor(appName: string, opts?: import('./types').Options);
+    constructor(appName: string, opts?: import('./loaded').Options);
     appName: string;
     opts: {
         /**
@@ -36,7 +36,7 @@ export default class SumConfig {
          * slower than the JSON loader).
          */
         loaders?: {
-            [x: string]: import("./types").Loader;
+            [x: string]: import("./loaded").Loader;
         };
         /**
          * Where to start searching from.
@@ -97,5 +97,5 @@ export default class SumConfig {
      */
     source(key: string): string;
 }
-import Combiner from "./combiner.js";
+import { Combiner } from "./combiner.js";
 import { defaultMeta as dm } from "./defaults.js";

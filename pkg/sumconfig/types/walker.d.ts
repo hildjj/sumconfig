@@ -1,4 +1,4 @@
-export default class Walker {
+export class Walker {
     /** @type {Object<string,string[]|Promise<string[]>>} */
     static cache: {
         [x: string]: string[] | Promise<string[]>;
@@ -17,8 +17,8 @@ export default class Walker {
      * of the filenames from opts that exist on those paths.
      *
      * @param {string} appName The application name.
-     * @param {import('./types').Options} opts Options.
+     * @param {import('./loaded').Options} opts Options.
      * @returns {Promise<string[]>} The directories.
      */
-    static allDirs(appName: string, opts: import('./types').Options): Promise<string[]>;
+    static allDirs(appName: string, opts: import('./loaded').Options): Promise<string[]>;
 }

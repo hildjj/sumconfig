@@ -9,6 +9,6 @@ export function fileNames(appName: string): string[];
  * The default configuration for sumconfig.
  *
  * @param {string} [appName] Name of the app.
- * @returns {import('./types').Options} The default options for this appName.
+ * @returns {import('./loaded').Options} The default options for this appName.
  */
-export function defaultMeta(appName?: string): import('./types').Options;
+export function defaultMeta(appName?: string): import('./loaded').Options;

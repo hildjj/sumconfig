@@ -1,7 +1,7 @@
 import * as util from 'util'
-import Combiner from './combiner.js'
-import Loaders from './loaders.js'
-import Walker from './walker.js'
+import {Combiner} from './combiner.js'
+import {Loaders} from './loaders.js'
+import {Walker} from './walker.js'
 import {defaultMeta as dm} from './defaults.js'
 
 export default class SumConfig {
@@ -12,7 +12,7 @@ export default class SumConfig {
    *
    * @param {string} appName The application name.  All of the characters in
    *   the name should be safe for use in a filename.
-   * @param {import('./types').Options} [opts] Options.
+   * @param {import('./loaded').Options} [opts] Options.
    */
   constructor(appName, opts) {
     // These are known-bad
@@ -39,7 +39,7 @@ export default class SumConfig {
    *
    * @param {string} appName The application name.  All of the characters in
    *   the name should be safe for use in a filename.
-   * @param {import('./types').Options} [opts] Options.
+   * @param {import('./loaded').Options} [opts] Options.
    * @returns {Promise<object>} The combined configurations.
    */
   static sumconfig(appName, opts) {
